@@ -24,6 +24,9 @@ import LinkIcon from "@mui/icons-material/Link";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import { Proportions } from 'lucide-react';
+import { MonitorCheck } from 'lucide-react';
+import { Bot } from 'lucide-react';
+import { link } from "fs";
 // DASHBOARD SECTIONS
 export const DashboardSections = [
   {
@@ -74,6 +77,36 @@ export const DashboardSections = [
         link: "/dashboard/algorithmic-execution",
         icon: <MemoryIcon />,
       },
+      // {
+      //   Title: "Ut Bot Screener",
+      //   link:"/dashboard/ut-bot-screener",
+      //   icon: <Bot />
+      // },
+      // {
+      //   Title: "Ut Bot Screener Results",
+      //   link:"/dashboard/results",
+      //   icon: <MonitorCheck />
+      // }
+    ],
+  },
+  {
+    heading: "Proprietary Model",
+    items: [
+      {
+        Title: "HMM",
+        link:"/dashboard/hmm-screen",
+        icon: <Bot />
+      },
+      {
+        Title: "Ut Bot Screener",
+        link:"/dashboard/ut-bot-screener",
+        icon: <Bot />
+      },
+      // {
+      //   Title: "Ut Bot Screener Results",
+      //   link:"/dashboard/results",
+      //   icon: <MonitorCheck />
+      // }
     ],
   },
   {

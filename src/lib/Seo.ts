@@ -31,6 +31,7 @@ export const getPageTitle = (pathname: string): string => {
     "/dashboard/business-promoter-analysis": "Business Analysis",
     "/dashboard/business-promoter-analysis/new": "New Business Analysis",
     "/dashboard/signal-generator": "Signal Generator",
+    "/dashboard/ut-bot-screener": "Ut Bot Screener",
     "/dashboard/position-sizing": "Position Sizing",
     "/dashboard/backtesting-optimization": "Backtesting & Optimization",
     "/dashboard/algorithmic-execution": "Algorithmic Execution",

@@ -60,6 +60,12 @@ import { useEffect, useState } from "react";
 import { ESGAlertsPanel } from "./pages/EsgInsight/ESGReport&Alerts/Index";
 import { companies } from "./pages/ForensicReports/Data/ForensicData";
 import { getPageTitle, setDocumentTitle } from "./lib/Seo";
+import UtBotScreener from "./pages/Utbotscreener/Index";
+import { AuthProvider } from "./context/AuthContext";
+import { ScreenerProvider } from "./context/ScreenerContext";
+import ResultsTable from "./pages/QuantAlogTools/UtBotScreenResults";
+import Register from "./pages/LandingPages/Signup";
+import SampleHMMScreener from "./pages/HmmScreen";
 
 const queryClient = new QueryClient();
 
@@ -77,16 +83,16 @@ const App = () => {
     setSelectedCompanyId1(companyId);
   };
 
-const SEO = () => {
-  const location = useLocation();
-  
-  useEffect(() => {
-    const pageTitle = getPageTitle(location.pathname);
-    setDocumentTitle(pageTitle);
-  }, [location.pathname]);
-  
-  return null;
-};
+  const SEO = () => {
+    const location = useLocation();
+
+    useEffect(() => {
+      const pageTitle = getPageTitle(location.pathname);
+      setDocumentTitle(pageTitle);
+    }, [location.pathname]);
+
+    return null;
+  };
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -94,168 +100,191 @@ const SEO = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <ScrollToTop />
-            <SEO />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/investment-reports" element={<InvestmentReports />} />
-            <Route path="/research-platform" element={<ResearchPlatform />} />
-            <Route path="/advisory-services" element={<AdvisoryServices />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/career" element={<Career />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/terms" element={<TermsOfService />} />
-            <Route path="/legal" element={<Legal />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/dashboard" element={<ResponsiveDrawer />}>
-              {/* <Route index element={<DashBoard />} /> */}
-              <Route path="equity-research-report">
-                <Route index element={<EquityResearchReport />} />
-                <Route path="newreport" element={<NewReportForm />} />
-                <Route path=":id" element={<ReportEditor />} />{" "}
-              </Route>
-              <Route
-                path="investment-agent-lab"
-                element={<InvestmentAgentLab />}
-              />
-              <Route path="valuation-models">
-                <Route index element={<Valuation />} />
-                <Route path="valuation" element={<ValuationModelsPage />} />
-                <Route path=":id" element={<ValuationModelEditorPage />} />
-              </Route>
-              <Route path="business-promoter-analysis">
-                <Route index element={<BusinessPromoterAnalysis />} />
+          {/* <ScrollToTop />
+          <SEO /> */}
+          <AuthProvider>
+            <ScreenerProvider>
+              <Routes>
+                <Route path="/" element={<Index />} />
                 <Route
-                  path="business-analysis"
-                  element={<BusinessAnalysisPage />}
+                  path="/investment-reports"
+                  element={<InvestmentReports />}
                 />
-                <Route path="new" element={<NewBusinessAnalysisPage />} />
-                <Route path=":id" element={<BusinessAnalysisEditorPage />} />
-              </Route>
-              <Route path="signal-generator" element={<SignalGenerator />} />
-              <Route path="position-sizing" element={<PositionSizing />} />
-              <Route
-                path="backtesting-optimization"
-                element={<BackTestingOptimization />}
-              />
-              <Route
-                path="algorithmic-execution"
-                element={<AlgorithmExecution />}
-              />
-              <Route path="macro-dashboard" element={<MarcoDashboard />} />
-              <Route
-                path="business-cycle-view"
-                element={<BusinessCycleView />}
-              />
-              <Route
-                path="fii-smart-money-tracker"
-                element={<FiiSmartMoneyTracker />}
-              />
-              <Route
-                path="esg-sustainability-analytics"
-                element={
-                  <Sustainability
-                    company={selectedCompany}
-                    selectedCompanyId={selectedCompanyId}
-                    setSelectedCompanyId={setSelectedCompanyId}
+                <Route
+                  path="/research-platform"
+                  element={<ResearchPlatform />}
+                />
+                <Route
+                  path="/advisory-services"
+                  element={<AdvisoryServices />}
+                />
+                <Route path="/about" element={<About />} />
+                <Route path="/career" element={<Career />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/legal" element={<Legal />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/dashboard" element={<ResponsiveDrawer />}>
+                  {/* <Route index element={<DashBoard />} /> */}
+                  <Route path="equity-research-report">
+                    <Route index element={<EquityResearchReport />} />
+                    <Route path="newreport" element={<NewReportForm />} />
+                    <Route path=":id" element={<ReportEditor />} />{" "}
+                  </Route>
+                  <Route
+                    path="investment-agent-lab"
+                    element={<InvestmentAgentLab />}
                   />
-                }
-              />
-              <Route
-                path="greenwashing-detection-flags"
-                element={
-                  <GreenWashingDetectionFlag
-                    setSelectedCompanyId={setSelectedCompanyId}
-                    selectedCompanyId={selectedCompanyId}
-                    companyId={selectedCompanyId}
+                  <Route path="valuation-models">
+                    <Route index element={<Valuation />} />
+                    <Route path="valuation" element={<ValuationModelsPage />} />
+                    <Route path=":id" element={<ValuationModelEditorPage />} />
+                  </Route>
+                  <Route path="business-promoter-analysis">
+                    <Route index element={<BusinessPromoterAnalysis />} />
+                    <Route
+                      path="business-analysis"
+                      element={<BusinessAnalysisPage />}
+                    />
+                    <Route path="new" element={<NewBusinessAnalysisPage />} />
+                    <Route
+                      path=":id"
+                      element={<BusinessAnalysisEditorPage />}
+                    />
+                  </Route>
+                  <Route
+                    path="signal-generator"
+                    element={<SignalGenerator />}
                   />
-                }
-              />
-              <Route
-                path="peer-esg-benchmarking"
-                element={
-                  <BenchMarking
-                    company={selectedCompany}
-                    selectedCompanyId={selectedCompanyId}
-                    setSelectedCompanyId={setSelectedCompanyId}
+                  <Route path="position-sizing" element={<PositionSizing />} />
+                  <Route
+                    path="backtesting-optimization"
+                    element={<BackTestingOptimization />}
                   />
-                }
-              />
-              <Route
-                path="ESG-Reports-Export-Alerts"
-                element={
-                  <ESGAlertsPanel
-                    companyId={selectedCompanyId}
-                    selectedCompanyId={selectedCompanyId}
-                    setSelectedCompanyId={setSelectedCompanyId}
+                  <Route
+                    path="algorithmic-execution"
+                    element={<AlgorithmExecution />}
                   />
-                }
-              />
-              <Route
-                path="leadership-integrity-reports"
-                element={
-                  <LeaderShipIntegrityReport
-                    handleCompanyChange={handleCompanyChange}
-                    companyId={selectedCompanyId1}
-                    selectedCompanyId1={selectedCompanyId1}
+                  <Route path="ut-bot-screener" element={<UtBotScreener />} />
+                  <Route path="hmm-screen" element={<SampleHMMScreener />} />
+                  <Route path="results" element={<ResultsTable />} />
+                  <Route path="macro-dashboard" element={<MarcoDashboard />} />
+                  <Route
+                    path="business-cycle-view"
+                    element={<BusinessCycleView />}
                   />
-                }
-              />
-              <Route
-                path="insider-related-party-activity"
-                element={
-                  <InsiderRelatedPartyActivity
-                    handleCompanyChange={handleCompanyChange}
-                    selectedCompanyId1={selectedCompanyId1}
-                    companyId={selectedCompanyId1}
+                  <Route
+                    path="fii-smart-money-tracker"
+                    element={<FiiSmartMoneyTracker />}
                   />
-                }
-              />
-              <Route
-                path="governance-red-flag-index"
-                element={
-                  <GovernanceRedFlagIndex
-                    handleCompanyChange={handleCompanyChange}
-                    selectedCompanyId1={selectedCompanyId1}
-                    companyId={selectedCompanyId1}
+                  <Route
+                    path="esg-sustainability-analytics"
+                    element={
+                      <Sustainability
+                        company={selectedCompany}
+                        selectedCompanyId={selectedCompanyId}
+                        setSelectedCompanyId={setSelectedCompanyId}
+                      />
+                    }
                   />
-                }
-              />
-              <Route
-                path="watchlists-coverage-tracker"
-                element={<WatchListCoverageTrackers />}
-              />
-              <Route
-                path="pm-review-approvals"
-                element={<PMreviewApproval />}
-              />
-              <Route
-                path="research-archive-versioning"
-                element={<ResearchArchivingVersioning />}
-              />
-              <Route
-                path="comments-feedback-center"
-                element={<CommentFeedBackCenter />}
-              />
-              <Route
-                path="report-builder-settings"
-                element={<ReportBuilderSetting />}
-              />
-              <Route path="alert-manager" element={<AlertManager />} />
-              <Route
-                path="user-roles-permissions"
-                element={<UserRolePermission />}
-              />
-              <Route
-                path="broker-api-integrations"
-                element={<BrokerApiIntegration />}
-              />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+                  <Route
+                    path="greenwashing-detection-flags"
+                    element={
+                      <GreenWashingDetectionFlag
+                        setSelectedCompanyId={setSelectedCompanyId}
+                        selectedCompanyId={selectedCompanyId}
+                        companyId={selectedCompanyId}
+                      />
+                    }
+                  />
+                  <Route
+                    path="peer-esg-benchmarking"
+                    element={
+                      <BenchMarking
+                        company={selectedCompany}
+                        selectedCompanyId={selectedCompanyId}
+                        setSelectedCompanyId={setSelectedCompanyId}
+                      />
+                    }
+                  />
+                  <Route
+                    path="ESG-Reports-Export-Alerts"
+                    element={
+                      <ESGAlertsPanel
+                        companyId={selectedCompanyId}
+                        selectedCompanyId={selectedCompanyId}
+                        setSelectedCompanyId={setSelectedCompanyId}
+                      />
+                    }
+                  />
+                  <Route
+                    path="leadership-integrity-reports"
+                    element={
+                      <LeaderShipIntegrityReport
+                        handleCompanyChange={handleCompanyChange}
+                        companyId={selectedCompanyId1}
+                        selectedCompanyId1={selectedCompanyId1}
+                      />
+                    }
+                  />
+                  <Route
+                    path="insider-related-party-activity"
+                    element={
+                      <InsiderRelatedPartyActivity
+                        handleCompanyChange={handleCompanyChange}
+                        selectedCompanyId1={selectedCompanyId1}
+                        companyId={selectedCompanyId1}
+                      />
+                    }
+                  />
+                  <Route
+                    path="governance-red-flag-index"
+                    element={
+                      <GovernanceRedFlagIndex
+                        handleCompanyChange={handleCompanyChange}
+                        selectedCompanyId1={selectedCompanyId1}
+                        companyId={selectedCompanyId1}
+                      />
+                    }
+                  />
+                  <Route
+                    path="watchlists-coverage-tracker"
+                    element={<WatchListCoverageTrackers />}
+                  />
+                  <Route
+                    path="pm-review-approvals"
+                    element={<PMreviewApproval />}
+                  />
+                  <Route
+                    path="research-archive-versioning"
+                    element={<ResearchArchivingVersioning />}
+                  />
+                  <Route
+                    path="comments-feedback-center"
+                    element={<CommentFeedBackCenter />}
+                  />
+                  <Route
+                    path="report-builder-settings"
+                    element={<ReportBuilderSetting />}
+                  />
+                  <Route path="alert-manager" element={<AlertManager />} />
+                  <Route
+                    path="user-roles-permissions"
+                    element={<UserRolePermission />}
+                  />
+                  <Route
+                    path="broker-api-integrations"
+                    element={<BrokerApiIntegration />}
+                  />
+                </Route>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </ScreenerProvider>
+          </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

@@ -12,74 +12,97 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/components/ui/use-toast";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import LoginBackGround from "../../asset/LoginBackGround.jpg";
 
-const Login = () => {
+const Register: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { login, user } = useAuth();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const { register, user, isEmailConfirmed } = useAuth();
+  const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [apiError, setApiError] = useState<string>("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log("[Login Page] MOUNTED.");
+    console.log("[Register Page] MOUNTED.");
     if (user) {
-      console.log("[Login Page] User already exists. Redirecting...");
-      navigate("/dashboard/investment-agent-lab");
+      console.log("[Register Page] User exists. Checking email confirmation...");
+      if (isEmailConfirmed) {
+        navigate("/dashboard/investment-agent-lab");
+      } else {
+        navigate("/confirm");
+      }
     }
-  }, [user, navigate]);
+  }, [user, isEmailConfirmed, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     if (apiError) setApiError("");
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(
-      "-> Step 1: `handleLogin` function triggered by form submission."
-    );
+    console.log("-> Step 1: `handleRegister` triggered.");
 
-    if (!form.email || !form.password) {
-      console.log("-> Step 2: Validation FAILED (fields empty). Aborting.");
-      setApiError("Email and password cannot be empty.");
+    if (!form.username || !form.email || !form.password) {
+      console.log("-> Step 2: Validation FAILED (fields empty).");
+      setApiError("All fields are required.");
+      return;
+    }
+
+    if (form.username.length < 3) {
+      console.log("-> Step 2: Validation FAILED (username too short).");
+      setApiError("Username must be at least 3 characters.");
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(form.email)) {
+      console.log("-> Step 2: Validation FAILED (invalid email).");
+      setApiError("Invalid email format.");
+      return;
+    }
+
+    if (form.password.length < 4) {
+      console.log("-> Step 2: Validation FAILED (password too short).");
+      setApiError("Password must be at least 4 characters.");
       return;
     }
 
     setLoading(true);
     setApiError("");
-    console.log(
-      "-> Step 2: Validation PASSED. Proceeding to call context login function."
-    );
+    console.log("-> Step 2: Validation PASSED. Calling register.");
 
     try {
-      // This is the call to the function in AuthContext.tsx
-      console.log("-> Step 3: Calling `await login(...)`...");
-      await login(form.email, form.password);
+      console.log("-> Step 3: Calling `await register(...)`...");
+      await register(form.username, form.email, form.password);
 
-      console.log("-> Step 4: `login` function completed successfully.");
-      toast({ title: "Login Successful", description: "Redirecting..." });
-      navigate("/dashboard/investment-agent-lab");
+      console.log("-> Step 4: `register` successful.");
+      toast({ title: "Registration Successful", description: isEmailConfirmed ? "Redirecting..." : "Please check your email to confirm." });
+      if (isEmailConfirmed) {
+        navigate("/dashboard/investment-agent-lab");
+      } else {
+        navigate("/confirm");
+      }
     } catch (error: any) {
-      console.log("-> Step 4: `login` function FAILED and threw an error.");
-      setApiError(error.message);
+      console.log("-> Step 4: `register` FAILED.");
+      setApiError(error.message || "Failed to create account.");
     } finally {
-      console.log(
-        "-> Step 5: `finally` block running. Setting loading to false."
-      );
+      console.log("-> Step 5: `finally` block. Setting loading to false.");
       setLoading(false);
     }
   };
 
-  if (user) return null; // Render nothing if already logged in to prevent form flash
+  const handleGoogleSignIn = () => {
+    toast({ title: "Google Sign-Up", description: "Not implemented yet.", variant: "default" });
+  };
+
+  if (user) return null;
 
   return (
     <div
-      className="login-container min-h-screen flex items-center justify-center p-4"
+      className="register-container min-h-screen flex items-center justify-center p-4"
       style={{
         backgroundImage: `url(${LoginBackGround})`,
         backgroundSize: "cover",
@@ -89,24 +112,37 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-finance-blue">
-          Advanced Financial Research Platform
+            Advanced Financial Research platform
           </h1>
+
         </div>
         <Card className="w-full shadow-lg animate-fade-in">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
+            <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>
             <CardDescription>
-              Enter your credentials to access your account
+              Create an account to access the platform
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleLogin} noValidate>
+            <form onSubmit={handleRegister} noValidate>
               {apiError && (
                 <Alert variant="destructive" className="mb-4">
                   <AlertDescription>{apiError}</AlertDescription>
                 </Alert>
               )}
               <div className="space-y-4">
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    name="username"
+                    placeholder="Username"
+                    className="pl-10"
+                    value={form.username}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                   <Input
@@ -142,32 +178,31 @@ const Login = () => {
                     )}
                   </button>
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <Link
-                    to="/forgot-password"
-                    className="text-accent hover:text-accent/80 transition-colors"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
                 <Button
                   type="submit"
                   className="w-full bg-accent hover:bg-accent/90"
                   disabled={loading}
                 >
-                  {loading ? "Signing in..." : "Sign in"}
+                  {loading ? "Creating account..." : "Sign up"}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleGoogleSignIn}
+                >
+                  Sign up with Google
                 </Button>
               </div>
             </form>
           </CardContent>
           <CardFooter>
             <div className="text-sm text-muted-foreground">
-              Don't have an account?{" "}
+              Already have an account?{" "}
               <Link
-                to="/signup"
+                to="/login"
                 className="text-accent hover:text-accent/80 transition-colors"
               >
-                Create an account
+                Sign in
               </Link>
             </div>
           </CardFooter>
@@ -177,4 +212,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
